@@ -90,16 +90,27 @@ class DashboardController extends Controller
 
         // 6. Room Utilization (Last 30 days)
         $last30Days = Carbon::now()->subDays(30);
-        $roomUtilization = TanggalJadwal::join('jadwals', 'tanggal_jadwals.jadwal_id', '=', 'jadwals.id')
+        $roomUtilizationQuery = TanggalJadwal::join('jadwals', 'tanggal_jadwals.jadwal_id', '=', 'jadwals.id')
             ->where('jadwals.status', 'DISETUJUI')
             ->when(! $isAdmin, function ($q) use ($user) {
                 $q->where('jadwals.peminjam_id', $user->id);
             })
-            ->whereDate('tanggal', '>=', $last30Days)
-            ->select('jadwals.ruangan_id', DB::raw('SUM(TIME_TO_SEC(TIMEDIFF(jam_berakhir, jam_mulai)) / 3600) as total_jam'), DB::raw('COUNT(DISTINCT tanggal) as total_hari'))
-            ->groupBy('jadwals.ruangan_id')
-            ->get()
-            ->keyBy('ruangan_id');
+            ->whereDate('tanggal', '>=', $last30Days);
+
+        // Use database-specific time calculation functions
+        if (config('database.default') === 'sqlite') {
+            $roomUtilization = $roomUtilizationQuery
+                ->select('jadwals.ruangan_id', DB::raw('SUM((strftime(\'%s\', jam_berakhir) - strftime(\'%s\', jam_mulai)) / 3600.0) as total_jam'), DB::raw('COUNT(DISTINCT tanggal) as total_hari'))
+                ->groupBy('jadwals.ruangan_id')
+                ->get()
+                ->keyBy('ruangan_id');
+        } else {
+            $roomUtilization = $roomUtilizationQuery
+                ->select('jadwals.ruangan_id', DB::raw('SUM(TIME_TO_SEC(TIMEDIFF(jam_berakhir, jam_mulai)) / 3600) as total_jam'), DB::raw('COUNT(DISTINCT tanggal) as total_hari'))
+                ->groupBy('jadwals.ruangan_id')
+                ->get()
+                ->keyBy('ruangan_id');
+        }
 
         // 7. Monthly Trends (Last 6 months)
         $monthlyTrends = [];
@@ -230,16 +241,30 @@ class DashboardController extends Controller
                     $query->where('jadwals.peminjam_id', $user->id);
                 }
 
-                $data = $query->select('ruangans.nama as room', DB::raw('SUM(TIME_TO_SEC(TIMEDIFF(jam_berakhir, jam_mulai)) / 3600) as total_jam'))
-                    ->groupBy('ruangans.nama')
-                    ->get()
-                    ->map(function ($item) {
-                        return [
-                            'room' => $item->room,
-                            'hours' => (int) $item->total_jam,
-                        ];
-                    })
-                    ->toArray();
+                // Use database-specific time calculation functions
+                if (config('database.default') === 'sqlite') {
+                    $data = $query->select('ruangans.nama as room', DB::raw('SUM((strftime(\'%s\', jam_berakhir) - strftime(\'%s\', jam_mulai)) / 3600.0) as total_jam'))
+                        ->groupBy('ruangans.nama')
+                        ->get()
+                        ->map(function ($item) {
+                            return [
+                                'room' => $item->room,
+                                'hours' => (int) $item->total_jam,
+                            ];
+                        })
+                        ->toArray();
+                } else {
+                    $data = $query->select('ruangans.nama as room', DB::raw('SUM(TIME_TO_SEC(TIMEDIFF(jam_berakhir, jam_mulai)) / 3600) as total_jam'))
+                        ->groupBy('ruangans.nama')
+                        ->get()
+                        ->map(function ($item) {
+                            return [
+                                'room' => $item->room,
+                                'hours' => (int) $item->total_jam,
+                            ];
+                        })
+                        ->toArray();
+                }
                 break;
 
             case 'status-distribution':
