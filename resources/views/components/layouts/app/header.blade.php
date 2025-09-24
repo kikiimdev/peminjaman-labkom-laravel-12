@@ -101,6 +101,12 @@
                     <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                       {{ __('Dashboard') }}
                     </flux:navlist.item>
+                    <flux:navlist.item icon="calendar" :href="route('kalender')" :current="request()->routeIs('kalender')" wire:navigate>
+                      {{ __('Kalender') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="calendar-alt" :href="route('calendar.page')" target="_blank" rel="noopener noreferrer">
+                      {{ __('Kalender Publik') }}
+                    </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

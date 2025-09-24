@@ -13,8 +13,30 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="calendar" :href="route('kalender')" :current="request()->routeIs('kalender')" wire:navigate>{{ __('Kalender') }}</flux:navlist.item>
+                    <flux:navlist.item icon="calendar" :href="route('calendar.page')" target="_blank" rel="noopener noreferrer">{{ __('Kalender Publik') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Manajemen')" class="grid">
+                    <flux:navlist.item icon="layout-grid" :href="route('jadwal.index')" :current="request()->routeIs('jadwal.*')" wire:navigate>{{ __('Jadwal') }}</flux:navlist.item>
+                    <flux:navlist.item icon="layout-grid" :href="route('ruangan.index')" :current="request()->routeIs('ruangan.*')" wire:navigate>{{ __('Ruangan') }}</flux:navlist.item>
+                    @if(Auth::user()->role == 'ADMIN')
+                    <flux:navlist.item icon="folder-git-2" :href="route('fasilitas.index')" :current="request()->routeIs('fasilitas.*')" wire:navigate>{{ __('Fasilitas') }}</flux:navlist.item>
+                    @endif
+                </flux:navlist.group>
+
+                @if(Auth::user()->role == 'ADMIN')
+                <flux:navlist.group :heading="__('Monitoring')" class="grid">
+                    <flux:navlist.item icon="chevrons-up-down" :href="route('pemeriksaan.index')" :current="request()->routeIs('pemeriksaan.*')" wire:navigate>{{ __('Pemeriksaan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="folder-git-2" :href="route('pemeliharaan.index')" :current="request()->routeIs('pemeliharaan.*')" wire:navigate>{{ __('Pemeliharaan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chevrons-up-down" :href="route('insiden.index')" :current="request()->routeIs('insiden.*')" wire:navigate>{{ __('Insiden') }}</flux:navlist.item>
+                </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Laporan')" class="grid">
+                    <flux:navlist.item icon="book-open-text" :href="route('laporan.index')" :current="request()->routeIs('laporan.*')" wire:navigate>{{ __('Laporan') }}</flux:navlist.item>
+                </flux:navlist.group>
+                @endif
             </flux:navlist>
 
             <flux:spacer />

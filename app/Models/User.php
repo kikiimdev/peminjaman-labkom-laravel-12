@@ -22,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'nama',
+        'nomor_whatsapp',
     ];
 
     /**
@@ -47,6 +50,41 @@ class User extends Authenticatable
         ];
     }
 
+    public function ruangans()
+    {
+        return $this->hasMany(Ruangan::class, 'pemilik_id');
+    }
+
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class, 'peminjam_id');
+    }
+
+    public function persetujuanJadwals()
+    {
+        return $this->hasMany(PersetujuanJadwal::class, 'aktor_id');
+    }
+
+    public function riwayatStatusJadwals()
+    {
+        return $this->hasMany(RiwayatStatusJadwal::class, 'aktor_id');
+    }
+
+    public function pemeriksaanRuangans()
+    {
+        return $this->hasMany(PemeriksaanRuangan::class, 'petugas_id');
+    }
+
+    public function insidens()
+    {
+        return $this->hasMany(Insiden::class, 'pelapor_id');
+    }
+
+    public function insidensDitangani()
+    {
+        return $this->hasMany(Insiden::class, 'ditangani_oleh');
+    }
+
     /**
      * Get the user's initials
      */
@@ -57,5 +95,22 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Get the user's name (use nama field if name is empty)
+     */
+    public function getNameAttribute($value)
+    {
+        return $value ?: $this->nama;
+    }
+
+    /**
+     * Set the user's name (also update nama field)
+     */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = $value;
+        $this->attributes['nama'] = $value;
     }
 }
