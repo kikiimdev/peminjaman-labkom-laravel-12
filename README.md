@@ -54,7 +54,7 @@ Sistem manajemen peminjaman laboratorium komputer untuk Fakultas Ekonomi dan Bis
 1. **Clone repository**
 ```bash
 git clone https://github.com/kikiimdev/peminjaman-labkom-laravel-12
-cd peminjaman-lab-laravel-12
+cd peminjaman-labkom-laravel-12
 ```
 
 2. **Install dependencies**
@@ -76,8 +76,8 @@ DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=apelkom_unlam
-DB_USERNAME=username
-DB_PASSWORD=password
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
 5. **Run migrations**
