@@ -53,7 +53,7 @@ Sistem manajemen peminjaman laboratorium komputer untuk Fakultas Ekonomi dan Bis
 
 1. **Clone repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/kikiimdev/peminjaman-labkom-laravel-12
 cd peminjaman-lab-laravel-12
 ```
 
