@@ -175,12 +175,40 @@
                                     <p class="text-xs text-gray-500">{{ $approval->peminjam->name }}</p>
                                 </div>
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('persetujuan.approve', $approval->id) }}" class="text-green-600 hover:text-green-800">
-                                        <i class="fas fa-check"></i>
-                                    </a>
-                                    <a href="{{ route('persetujuan.reject', $approval->id) }}" class="text-red-600 hover:text-red-800">
+                                    <form method="POST" action="{{ route('jadwals.approve', $approval) }}" class="flex-1">
+                                        @csrf
+                                        <button type="submit" class="text-green-600 hover:text-green-800">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <button type="button" class="text-red-600 hover:text-red-800" onclick="document.querySelector('#reject-dialog')?.showModal()">
                                         <i class="fas fa-times"></i>
-                                    </a>
+                                    </button>
+                                    <dialog id="reject-dialog" class="p-4 rounded min-w-[600px]">
+                                        <form method="POST" action="{{ route('jadwals.reject', $approval) }}">
+                                            @csrf
+                                            <label for="catatan" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Catatan
+                                            </label>
+                                            <textarea
+                                                id="catatan"
+                                                name="catatan"
+                                                rows="3"
+                                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                                placeholder="Catatan/alasan ditolak"
+                                            >{{ old('catatan') }}</textarea>
+                                            @error('catatan')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+
+                                            <footer class="flex flex-row-reverse gap-4 mt-6">
+                                                <button type="submit" class="bg-red-600 hover:bg-red-800 text-white px-6 py-2 rounded-lg font-medium">
+                                                    Tolak Jadwal
+                                                </button>
+                                                <button type="button" class="hover:bg-gray-200 px-6 py-2 rounded-lg font-medium" onclick="document.querySelector('#reject-dialog')?.close()">Kembali</button>
+                                            </footer>
+                                        </form>
+                                    </dialog>
                                 </div>
                             </div>
                         @endforeach
